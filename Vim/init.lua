@@ -29,7 +29,7 @@ vim.opt.signcolumn      = "yes"   -- always show sign column to avoid jitter
 -- ---------------------------------
 vim.opt.scrolloff       = 8       -- keep 8 lines visible above/below cursor
 vim.opt.sidescrolloff   = 8       -- keep 8 columns visible left/right of cursor
-vim.opt.wrap            = false   -- do not soft wrap long lines
+vim.opt.wrap            = true    -- soft wrap long lines
 vim.opt.showmode        = false   -- hide "-- INSERT --" (statusline/UIs show it)
 vim.opt.showcmd         = true    -- (legacy) show partial commands in statusline
 vim.opt.showmatch       = true    -- flash matching bracket
@@ -264,4 +264,31 @@ vim.api.nvim_create_user_command('RefreshTheme', function()
   create_custom_theme()
   vim.notify('Theme refreshed!')
 end, {})
+
+-- Leader key (must be set before lazy.nvim loads plugins)
+vim.g.mapleader = " "
+
+-- =========================================================
+-- Plugin Manager: lazy.nvim
+-- =========================================================
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git", "clone", "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable", lazypath,
+  })
+end
+vim.opt.rtp:prepend(lazypath)
+
+-- Load plugins from plugins.lua (same directory, follows symlinks)
+local this_file = debug.getinfo(1, "S").source:sub(2)
+local config_path = vim.fn.fnamemodify(vim.fn.resolve(this_file), ":h")
+require("lazy").setup(dofile(config_path .. "/plugins.lua"), {
+  ui = { border = "rounded" },
+})
+
+-- =========================================================
+-- Keymaps (non-plugin keymaps go here)
+-- =========================================================
 

@@ -1,18 +1,8 @@
-
-local colors = {
-  black  = "#1e222a",
-  white  = "#abb2bf",
-  gray2  = "#2e323a", -- unfocused window border / general dim bg
-  gray3  = "#545862",
-  gray4  = "#6d8dad",
-  blue   = "#61afef",  -- focused accents / window border
-  green  = "#7EC7A2",
-  red    = "#e06c75",
-  orange = "#caaa6a",
-  yellow = "#EBCB8B",
-  pink   = "#c678dd",
-  border = "#1e222a"   -- inner border
-}
+-- Load unified theme colors
+local this_file = debug.getinfo(1, "S").source:sub(2)
+local config_path = vim.fn.fnamemodify(vim.fn.resolve(this_file), ":h")
+local theme = dofile(config_path .. "/theme.lua")
+local colors = theme.colors
 
 -- ------------------------
 -- Basic Neovim UI settings
@@ -158,18 +148,18 @@ local function create_custom_theme()
   local highlights = {
     -- UI elements
     Normal       = { fg = colors.white, bg = colors.black },
-    NormalFloat  = { fg = colors.white, bg = colors.gray2 }, -- floating windows
+    NormalFloat  = { fg = colors.white, bg = colors.black }, -- floating windows
     LineNr       = { fg = colors.gray3 },
     CursorLine   = { bg = colors.gray2 },
     CursorLineNr = { fg = colors.blue, bold = true },
 
-    -- Window borders
-    VertSplit    = { fg = colors.border, bg = colors.border }, -- legacy split
+    -- Window borders (matches dwm: gray2 = unfocused, blue = focused)
+    VertSplit    = { fg = colors.gray2, bg = colors.black }, -- legacy split
     -- (Neovim's modern split is WinSeparator; added below)
 
     -- Status line
-    StatusLine   = { fg = colors.white, bg = colors.gray3 },
-    StatusLineNC = { fg = colors.gray4, bg = colors.gray2 },
+    StatusLine   = { fg = colors.white, bg = colors.gray2 },
+    StatusLineNC = { fg = colors.gray4, bg = colors.black },
 
     -- Search
     Search       = { fg = colors.black, bg = colors.yellow },
@@ -202,19 +192,20 @@ local function create_custom_theme()
     DiffText     = { fg = colors.white, bg = colors.blue },
 
     -- Completion menu
-    Pmenu        = { fg = colors.white, bg = colors.gray2 },
+    Pmenu        = { fg = colors.white, bg = colors.black },
     PmenuSel     = { fg = colors.black, bg = colors.blue },
-    PmenuSbar    = { bg = colors.gray3 },
-    PmenuThumb   = { bg = colors.gray4 },
+    PmenuSbar    = { bg = colors.gray2 },
+    PmenuThumb   = { bg = colors.gray3 },
   }
 
   -- Extended groups for consistency across modern UI elements
+  -- All backgrounds use colors.black (#1e222a) for unified dark theme
   local more = {
-    -- Unfocused windows & separators
-    NormalNC      = { fg = colors.white, bg = colors.gray2 },         -- non-current window
-    WinSeparator  = { fg = colors.border, bg = colors.border },       -- new split border group
-    FloatBorder   = { fg = colors.blue,  bg = colors.gray2 },         -- border around floats
-    FloatTitle    = { fg = colors.blue,  bg = colors.gray2, bold = true },
+    -- Unfocused windows & separators (matches dwm border colors)
+    NormalNC      = { fg = colors.white, bg = colors.black },         -- non-current window
+    WinSeparator  = { fg = colors.gray2, bg = colors.black },         -- unfocused border (dwm gray2)
+    FloatBorder   = { fg = colors.blue,  bg = colors.black },         -- focused border (dwm blue)
+    FloatTitle    = { fg = colors.black, bg = colors.blue, bold = true }, -- pill style title
 
     -- Columns & selection
     ColorColumn   = { bg = colors.gray2 },                            -- 'colorcolumn'
@@ -224,9 +215,9 @@ local function create_custom_theme()
     Whitespace    = { fg = colors.gray3 },                            -- :set list chars
 
     -- Tabs
-    TabLine       = { fg = colors.gray4, bg = colors.gray2 },
-    TabLineSel    = { fg = colors.white, bg = colors.gray3, bold = true },
-    TabLineFill   = { fg = colors.gray3, bg = colors.gray2 },
+    TabLine       = { fg = colors.gray4, bg = colors.black },
+    TabLineSel    = { fg = colors.white, bg = colors.gray2, bold = true },
+    TabLineFill   = { fg = colors.gray3, bg = colors.black },
 
     -- Sign/gutter background (so signs blend with main bg)
     SignColumn    = { bg = colors.black },
@@ -248,15 +239,17 @@ local function create_custom_theme()
 
     -- NvimTree: structure
     NvimTreeNormal          = { fg = colors.white, bg = colors.black },
-    NvimTreeWinSeparator    = { fg = colors.border, bg = colors.border },
+    NvimTreeNormalNC        = { fg = colors.white, bg = colors.black },
+    NvimTreeWinSeparator    = { fg = colors.gray2, bg = colors.black },
     NvimTreeIndentMarker    = { fg = colors.gray3 },
     NvimTreeRootFolder      = { fg = colors.blue, bold = true },
+    NvimTreeCursorLine      = { bg = colors.gray2 },
 
     -- NvimTree: folders
     NvimTreeFolderIcon      = { fg = colors.blue },
     NvimTreeFolderName      = { fg = colors.blue },
     NvimTreeOpenedFolderName = { fg = colors.blue, bold = true },
-    NvimTreeEmptyFolderName = { fg = colors.gray3 },
+    NvimTreeEmptyFolderName = { fg = colors.gray4 },
 
     -- NvimTree: files
     NvimTreeSpecialFile     = { fg = colors.orange, bold = true },
@@ -273,31 +266,42 @@ local function create_custom_theme()
     NvimTreeGitRenamed      = { fg = colors.blue },
     NvimTreeGitIgnored      = { fg = colors.gray3 },
 
+    -- NvimTree: file states
+    NvimTreeModifiedFile    = { fg = colors.orange },
+    NvimTreeOpenedFile      = { fg = colors.white, bold = true },
+    NvimTreeOpenedFolderIcon = { fg = colors.blue },
+    NvimTreeBookmarkIcon    = { fg = colors.pink },
+    NvimTreeBookmarkHL      = { fg = colors.pink },
+
+    -- NvimTree: clipboard
+    NvimTreeCutHL           = { fg = colors.red, italic = true },
+    NvimTreeCopiedHL        = { fg = colors.green, italic = true },
+
     -- Telescope: layout
     TelescopeNormal         = { fg = colors.white, bg = colors.black },
     TelescopeBorder         = { fg = colors.blue, bg = colors.black },
     TelescopeTitle          = { fg = colors.blue, bold = true },
 
     -- Telescope: prompt (input area)
-    TelescopePromptNormal   = { fg = colors.white, bg = colors.gray2 },
-    TelescopePromptBorder   = { fg = colors.blue, bg = colors.gray2 },
-    TelescopePromptTitle    = { fg = colors.black, bg = colors.blue, bold = true },
-    TelescopePromptPrefix   = { fg = colors.blue, bg = colors.gray2 },
-    TelescopePromptCounter  = { fg = colors.gray4, bg = colors.gray2 },
+    TelescopePromptNormal   = { fg = colors.white, bg = colors.black },
+    TelescopePromptBorder   = { fg = colors.blue, bg = colors.black },
+    TelescopePromptTitle    = { fg = colors.blue, bold = true },
+    TelescopePromptPrefix   = { fg = colors.blue, bg = colors.black },
+    TelescopePromptCounter  = { fg = colors.gray4, bg = colors.black },
 
     -- Telescope: results (file list)
     TelescopeResultsNormal  = { fg = colors.white, bg = colors.black },
-    TelescopeResultsBorder  = { fg = colors.border, bg = colors.black },
-    TelescopeResultsTitle   = { fg = colors.white },
+    TelescopeResultsBorder  = { fg = colors.gray2, bg = colors.black },
+    TelescopeResultsTitle   = { fg = colors.darkblue, bold = true },
 
     -- Telescope: preview
     TelescopePreviewNormal  = { fg = colors.white, bg = colors.black },
-    TelescopePreviewBorder  = { fg = colors.border, bg = colors.black },
+    TelescopePreviewBorder  = { fg = colors.gray2, bg = colors.black },
     TelescopePreviewTitle   = { fg = colors.green, bold = true },
 
     -- Telescope: selection & matching
-    TelescopeSelection      = { fg = colors.white, bg = colors.gray3, bold = true },
-    TelescopeSelectionCaret = { fg = colors.blue, bg = colors.gray3 },
+    TelescopeSelection      = { fg = colors.white, bg = colors.gray2, bold = true },
+    TelescopeSelectionCaret = { fg = colors.blue, bg = colors.gray2 },
     TelescopeMatching       = { fg = colors.yellow, bold = true },
     TelescopeMultiSelection = { fg = colors.pink, bg = colors.gray2 },
   }
@@ -337,10 +341,9 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 -- Load plugins from plugins.lua (same directory, follows symlinks)
-local this_file = debug.getinfo(1, "S").source:sub(2)
-local config_path = vim.fn.fnamemodify(vim.fn.resolve(this_file), ":h")
+-- (config_path already defined at top for theme loading)
 require("lazy").setup(dofile(config_path .. "/plugins.lua"), {
-  ui = { border = "rounded" },
+  ui = { border = "single" },
 })
 
 -- =========================================================

@@ -15,16 +15,57 @@ return {
         view = {
           width = 30,
           side = "left",
+          cursorline = true,
         },
         renderer = {
+          group_empty = true,
+          root_folder_label = ":t",
+          indent_width = 2,
+          indent_markers = {
+            enable = false,
+          },
           icons = {
+            padding = " ",
             show = {
               file = true,
               folder = true,
               folder_arrow = true,
               git = true,
+              modified = true,
+            },
+            glyphs = {
+              default = "󰈙",
+              symlink = "",
+              modified = "●",
+              folder = {
+                arrow_closed = "",
+                arrow_open = "",
+                default = "󰉋",
+                open = "󰝰",
+                empty = "󰉖",
+                empty_open = "󰷏",
+                symlink = "",
+                symlink_open = "",
+              },
+              git = {
+                unstaged = "󰄱",
+                staged = "󰱒",
+                unmerged = "",
+                renamed = "󰁕",
+                untracked = "",
+                deleted = "󰛲",
+                ignored = "󰈅",
+              },
             },
           },
+          highlight_git = true,
+          highlight_opened_files = "name",
+          highlight_modified = "name",
+        },
+        modified = {
+          enable = true,
+          show_on_dirs = true,
+          show_on_open_dirs = false,
         },
         filters = {
           dotfiles = false,
@@ -66,7 +107,11 @@ return {
           prompt_prefix = "   ",
           selection_caret = "  ",
           entry_prefix = "  ",
+          prompt_title = " Search ",
+          results_title = " Results ",
+          preview_title = " Preview ",
           sorting_strategy = "ascending",
+          borderchars = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
           layout_config = {
             horizontal = {
               prompt_position = "top",
@@ -102,49 +147,13 @@ return {
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
-      -- Custom One Dark theme matching init.lua colors
-      local colors = {
-        black  = "#1e222a",
-        white  = "#abb2bf",
-        gray2  = "#2e323a",
-        gray3  = "#545862",
-        gray4  = "#6d8dad",
-        blue   = "#61afef",
-        green  = "#7EC7A2",
-        red    = "#e06c75",
-        orange = "#caaa6a",
-        yellow = "#EBCB8B",
-        pink   = "#c678dd",
-      }
-
-      local onedark_custom = {
-        normal = {
-          a = { fg = colors.black, bg = colors.blue, gui = "bold" },
-          b = { fg = colors.white, bg = colors.gray3 },
-          c = { fg = colors.gray4, bg = colors.gray2 },
-        },
-        insert = {
-          a = { fg = colors.black, bg = colors.green, gui = "bold" },
-        },
-        visual = {
-          a = { fg = colors.black, bg = colors.pink, gui = "bold" },
-        },
-        replace = {
-          a = { fg = colors.black, bg = colors.red, gui = "bold" },
-        },
-        command = {
-          a = { fg = colors.black, bg = colors.orange, gui = "bold" },
-        },
-        inactive = {
-          a = { fg = colors.gray4, bg = colors.gray2 },
-          b = { fg = colors.gray4, bg = colors.gray2 },
-          c = { fg = colors.gray4, bg = colors.gray2 },
-        },
-      }
+      -- Load unified theme
+      local config_path = vim.fn.fnamemodify(vim.fn.resolve(debug.getinfo(1, "S").source:sub(2)), ":h")
+      local theme = dofile(config_path .. "/theme.lua")
 
       require("lualine").setup({
         options = {
-          theme = onedark_custom,
+          theme = theme.lualine_theme,
           component_separators = { left = "", right = "" },
           section_separators = { left = "", right = "" },
           globalstatus = true,
@@ -231,6 +240,107 @@ return {
       }
 
       alpha.setup(dashboard.config)
+    end,
+  },
+
+  -- Color previews (show hex colors inline)
+  {
+    "norcalli/nvim-colorizer.lua",
+    event = { "BufReadPost", "BufNewFile" },
+    config = function()
+      require("colorizer").setup({
+        "*",  -- all filetypes
+      }, {
+        RGB = true,
+        RRGGBB = true,
+        names = false,
+        RRGGBBAA = true,
+        rgb_fn = true,
+        hsl_fn = true,
+        css = true,
+        css_fn = true,
+        mode = "background",  -- or "foreground" or "virtualtext"
+      })
+    end,
+  },
+
+  -- Bufferline (visual tabs for buffers)
+  {
+    "akinsho/bufferline.nvim",
+    version = "*",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    event = "VeryLazy",
+    config = function()
+      local config_path = vim.fn.fnamemodify(vim.fn.resolve(debug.getinfo(1, "S").source:sub(2)), ":h")
+      local theme = dofile(config_path .. "/theme.lua")
+      local c = theme.colors
+
+      require("bufferline").setup({
+        options = {
+          mode = "buffers",
+          separator_style = "thin",
+          show_buffer_close_icons = true,
+          show_close_icon = false,
+          color_icons = true,
+          diagnostics = "nvim_lsp",
+          offsets = {
+            { filetype = "NvimTree", text = "Files", highlight = "Directory", separator = true },
+          },
+        },
+        highlights = {
+          fill = { bg = c.black },
+          background = { fg = c.gray4, bg = c.black },
+          buffer_visible = { fg = c.gray4, bg = c.black },
+          buffer_selected = { fg = c.white, bg = c.gray2, bold = true },
+          separator = { fg = c.gray2, bg = c.black },
+          separator_visible = { fg = c.gray2, bg = c.black },
+          separator_selected = { fg = c.gray2, bg = c.gray2 },
+          indicator_selected = { fg = c.blue, bg = c.gray2 },
+          modified = { fg = c.orange, bg = c.black },
+          modified_visible = { fg = c.orange, bg = c.black },
+          modified_selected = { fg = c.orange, bg = c.gray2 },
+          tab = { fg = c.gray4, bg = c.black },
+          tab_selected = { fg = c.white, bg = c.gray2, bold = true },
+          tab_close = { fg = c.red, bg = c.black },
+        },
+      })
+    end,
+    keys = {
+      { "<Tab>", "<cmd>BufferLineCycleNext<cr>", desc = "Next buffer" },
+      { "<S-Tab>", "<cmd>BufferLineCyclePrev<cr>", desc = "Previous buffer" },
+      { "<leader>x", "<cmd>bdelete<cr>", desc = "Close buffer" },
+    },
+  },
+
+  -- Indent guides (vertical lines for indentation)
+  {
+    "lukas-reineke/indent-blankline.nvim",
+    main = "ibl",
+    event = { "BufReadPost", "BufNewFile" },
+    config = function()
+      local config_path = vim.fn.fnamemodify(vim.fn.resolve(debug.getinfo(1, "S").source:sub(2)), ":h")
+      local theme = dofile(config_path .. "/theme.lua")
+      local c = theme.colors
+
+      -- Set highlight groups for indent guides
+      vim.api.nvim_set_hl(0, "IblIndent", { fg = c.gray2 })
+      vim.api.nvim_set_hl(0, "IblScope", { fg = c.blue })
+
+      require("ibl").setup({
+        indent = {
+          char = "│",
+          highlight = "IblIndent",
+        },
+        scope = {
+          enabled = true,
+          show_start = false,
+          show_end = false,
+          highlight = "IblScope",
+        },
+        exclude = {
+          filetypes = { "help", "alpha", "dashboard", "NvimTree", "Trouble", "lazy" },
+        },
+      })
     end,
   },
 }

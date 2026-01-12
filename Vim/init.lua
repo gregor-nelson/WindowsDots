@@ -272,6 +272,34 @@ local function create_custom_theme()
     NvimTreeGitMerge        = { fg = colors.red },
     NvimTreeGitRenamed      = { fg = colors.blue },
     NvimTreeGitIgnored      = { fg = colors.gray3 },
+
+    -- Telescope: layout
+    TelescopeNormal         = { fg = colors.white, bg = colors.black },
+    TelescopeBorder         = { fg = colors.blue, bg = colors.black },
+    TelescopeTitle          = { fg = colors.blue, bold = true },
+
+    -- Telescope: prompt (input area)
+    TelescopePromptNormal   = { fg = colors.white, bg = colors.gray2 },
+    TelescopePromptBorder   = { fg = colors.blue, bg = colors.gray2 },
+    TelescopePromptTitle    = { fg = colors.black, bg = colors.blue, bold = true },
+    TelescopePromptPrefix   = { fg = colors.blue, bg = colors.gray2 },
+    TelescopePromptCounter  = { fg = colors.gray4, bg = colors.gray2 },
+
+    -- Telescope: results (file list)
+    TelescopeResultsNormal  = { fg = colors.white, bg = colors.black },
+    TelescopeResultsBorder  = { fg = colors.border, bg = colors.black },
+    TelescopeResultsTitle   = { fg = colors.white },
+
+    -- Telescope: preview
+    TelescopePreviewNormal  = { fg = colors.white, bg = colors.black },
+    TelescopePreviewBorder  = { fg = colors.border, bg = colors.black },
+    TelescopePreviewTitle   = { fg = colors.green, bold = true },
+
+    -- Telescope: selection & matching
+    TelescopeSelection      = { fg = colors.white, bg = colors.gray3, bold = true },
+    TelescopeSelectionCaret = { fg = colors.blue, bg = colors.gray3 },
+    TelescopeMatching       = { fg = colors.yellow, bold = true },
+    TelescopeMultiSelection = { fg = colors.pink, bg = colors.gray2 },
   }
 
   -- Apply highlights

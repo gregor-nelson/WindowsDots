@@ -245,6 +245,33 @@ local function create_custom_theme()
 
     -- Current search match accent (pairs with Search/IncSearch)
     CurSearch     = { fg = colors.black, bg = colors.yellow, bold = true },
+
+    -- NvimTree: structure
+    NvimTreeNormal          = { fg = colors.white, bg = colors.black },
+    NvimTreeWinSeparator    = { fg = colors.border, bg = colors.border },
+    NvimTreeIndentMarker    = { fg = colors.gray3 },
+    NvimTreeRootFolder      = { fg = colors.blue, bold = true },
+
+    -- NvimTree: folders
+    NvimTreeFolderIcon      = { fg = colors.blue },
+    NvimTreeFolderName      = { fg = colors.blue },
+    NvimTreeOpenedFolderName = { fg = colors.blue, bold = true },
+    NvimTreeEmptyFolderName = { fg = colors.gray3 },
+
+    -- NvimTree: files
+    NvimTreeSpecialFile     = { fg = colors.orange, bold = true },
+    NvimTreeExecFile        = { fg = colors.green },
+    NvimTreeImageFile       = { fg = colors.pink },
+    NvimTreeSymlink         = { fg = colors.pink },
+
+    -- NvimTree: git status
+    NvimTreeGitDirty        = { fg = colors.yellow },
+    NvimTreeGitStaged       = { fg = colors.green },
+    NvimTreeGitNew          = { fg = colors.green },
+    NvimTreeGitDeleted      = { fg = colors.red },
+    NvimTreeGitMerge        = { fg = colors.red },
+    NvimTreeGitRenamed      = { fg = colors.blue },
+    NvimTreeGitIgnored      = { fg = colors.gray3 },
   }
 
   -- Apply highlights

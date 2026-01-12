@@ -1,3 +1,4 @@
+
 $env:Path = "C:\Users\gregor\AppData\Roaming\npm;" + $env:Path
 
 function prompt {

@@ -45,12 +45,17 @@ return {
   -- Telescope: fuzzy finder
   {
     "nvim-telescope/telescope.nvim",
-    branch = "0.1.x",
+    branch = "master",
     cmd = { "Telescope" },
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-tree/nvim-web-devicons",
-      { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+      {
+        "nvim-telescope/telescope-fzf-native.nvim",
+        build = vim.fn.has("win32") == 1
+          and "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release"
+          or "make",
+      },
     },
     config = function()
       local telescope = require("telescope")
@@ -162,6 +167,17 @@ return {
     branch = "main",
     build = ":TSUpdate",
     config = function()
+      local ts_install = require("nvim-treesitter.install")
+
+      -- Platform-specific setup
+      if vim.fn.has("win32") == 1 then
+        -- Windows: zigcc wrapper calls "zig cc" for self-contained binaries
+        ts_install.compilers = { "zigcc" }
+      else
+        -- Linux/Termux: use gcc/clang
+        ts_install.compilers = { "gcc", "clang", "zig" }
+      end
+
       local ts = require("nvim-treesitter")
       ts.setup()
       ts.install({ "css", "html", "javascript", "python" })

@@ -1,13 +1,8 @@
-# ============================================================================
-# ZSH Configuration - Universal WSL Template with Dynamic Themes
-# ============================================================================
-
 export EDITOR=nvim
 autoload -U colors && colors
 
-# ----------------------------------------------------------------------------
-# Distro Icon & Theme Auto-Detection
-# ----------------------------------------------------------------------------
+
+
 if [[ -n "$WSL_DISTRO_NAME" ]]; then
   case "${WSL_DISTRO_NAME:l}" in
     *fedora*)
@@ -61,44 +56,29 @@ else
   PATH_COLOR="#abb2bf"
 fi
 
-
-# Assemble the Prompt
-# ----------------------------------------------------------------------------
 setopt PROMPT_SUBST
 PS1='%B%F{$BRACKET_COLOR}[%F{$USER_COLOR}%n%F{$AT_COLOR}@%F{$HOST_COLOR}%M %F{$PATH_COLOR}%~%F{$BRACKET_COLOR}]%{$reset_color%}$%b '
 
-# Right prompt with timestamp (optional - uncomment to enable)
-# RPROMPT='%F{240}%*%f'
+HISTSIZE=1000000
+SAVEHIST=1000000
+HISTFILE=~/.zsh_history
 
-# ----------------------------------------------------------------------------
-# History
-# ----------------------------------------------------------------------------
-# Auto-create history directory if it doesn't exist
-[[ ! -d ~/.cache/zsh ]] && mkdir -p ~/.cache/zsh
+setopt SHARE_HISTORY             # Share history between sessions (includes immediate write)
+setopt EXTENDED_HISTORY          # Record timestamp with each command
+setopt HIST_REDUCE_BLANKS        # Remove extra whitespace
 
-HISTSIZE=10000
-SAVEHIST=10000
-HISTFILE=~/.cache/zsh/history
-
-setopt APPEND_HISTORY
-setopt INC_APPEND_HISTORY
-setopt SHARE_HISTORY
-setopt HIST_IGNORE_ALL_DUPS
-setopt HIST_REDUCE_BLANKS
-setopt HIST_VERIFY
-setopt EXTENDED_HISTORY
-setopt HIST_FIND_NO_DUPS
-
-# ----------------------------------------------------------------------------
-# Completion
-# ----------------------------------------------------------------------------
-autoload -U compinit
+autoload -Uz compinit
 zstyle ':completion:*' menu select
 zmodload zsh/complist
-compinit
-_comp_options+=(globdots)
 
-# Case-insensitive completion (like PowerShell)
+if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
+    compinit
+else
+    compinit -C
+fi
+
+_comp_options+=(globdots)        # Include hidden files
+
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 
 setopt COMPLETE_IN_WORD
@@ -109,9 +89,45 @@ setopt LIST_PACKED
 setopt LIST_TYPES
 setopt REC_EXACT
 
-# ----------------------------------------------------------------------------
-# Directory Navigation
-# ----------------------------------------------------------------------------
+bindkey -v
+export KEYTIMEOUT=1
+
+# Use vim keys in tab complete menu
+bindkey -M menuselect 'h' vi-backward-char
+bindkey -M menuselect 'k' vi-up-line-or-history
+bindkey -M menuselect 'l' vi-forward-char
+bindkey -M menuselect 'j' vi-down-line-or-history
+bindkey -v '^?' backward-delete-char
+
+# Change cursor shape for different vi modes
+function zle-keymap-select {
+  if [[ ${KEYMAP} == vicmd ]] ||
+     [[ $1 = 'block' ]]; then
+    echo -ne '\e[1 q'
+  elif [[ ${KEYMAP} == main ]] ||
+       [[ ${KEYMAP} == viins ]] ||
+       [[ ${KEYMAP} = '' ]] ||
+       [[ $1 = 'beam' ]]; then
+    echo -ne '\e[5 q'
+  fi
+}
+zle -N zle-keymap-select
+
+zle-line-init() {
+    zle -K viins
+    echo -ne "\e[5 q"
+}
+zle -N zle-line-init
+
+echo -ne '\e[5 q' # Use beam shape cursor on startup
+autoload -Uz add-zsh-hook
+_reset_cursor() { echo -ne '\e[5 q'; }
+add-zsh-hook preexec _reset_cursor
+
+# Edit line in vim with ctrl-e
+autoload edit-command-line; zle -N edit-command-line
+bindkey '^e' edit-command-line
+
 setopt AUTO_CD
 setopt AUTO_PUSHD
 setopt PUSHD_IGNORE_DUPS
@@ -119,17 +135,11 @@ setopt PUSHD_SILENT
 setopt PUSHD_TO_HOME
 setopt CDABLE_VARS
 
-# ----------------------------------------------------------------------------
-# Globbing
-# ----------------------------------------------------------------------------
 setopt EXTENDED_GLOB
 setopt GLOB_DOTS
 setopt NUMERIC_GLOB_SORT
 setopt NULL_GLOB
 
-# ----------------------------------------------------------------------------
-# Miscellaneous
-# ----------------------------------------------------------------------------
 setopt NO_CLOBBER
 setopt NO_NOMATCH
 setopt INTERACTIVE_COMMENTS
@@ -143,18 +153,7 @@ setopt PRINT_EIGHT_BIT
 setopt TRANSIENT_RPROMPT
 setopt IGNORE_EOF
 
-# ----------------------------------------------------------------------------
-# Syntax Highlighting
-# ----------------------------------------------------------------------------
-if [[ -f /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]]; then
-  source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-elif [[ -f /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]]; then
-  source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-fi
 
-# ----------------------------------------------------------------------------
-# WSL Functions
-# ----------------------------------------------------------------------------
 win() {
   local winprofile=$(cmd.exe /c "echo %USERPROFILE%" 2>/dev/null | tr -d '\r' | sed 's/\\/\//g' | sed 's/C:/\/mnt\/c/g')
   if [[ -n "$winprofile" && -d "${winprofile}/Downloads/Dev" ]]; then
@@ -172,18 +171,8 @@ mot() {
     echo "motorwise.io folder not found at ${winprofile}/Downloads/Dev/motorwise.io"
   fi
 }
-
-# ----------------------------------------------------------------------------
-# LS Colors - Remove background highlighting for world-writable dirs (WSL mounts)
-# ----------------------------------------------------------------------------
-# ow = other-writable dirs without sticky bit
-# tw = other-writable dirs with sticky bit
 export LS_COLORS="${LS_COLORS}:ow=01;34:tw=01;34"
 
-# ----------------------------------------------------------------------------
-# Aliases
-# ----------------------------------------------------------------------------
-# Directory navigation
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
@@ -197,15 +186,22 @@ alias l='ls -CF'
 
 # Grep with color
 alias grep='grep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias egrep='egrep --color=auto'
-
-# Safety nets
-alias rm='rm -i'
-alias cp='cp -i'
-alias mv='mv -i'
+alias fgrep='grep -F --color=auto'
+alias egrep='grep -E --color=auto'
 
 # Misc
 alias reload='source ~/.zshrc'
 alias zshconfig='$EDITOR ~/.zshrc'
+
+export PATH="$HOME/.local/bin:$PATH"
+
+ZSH_PLUGIN_DIR="${HOME}/.local/share/zsh/plugins"
+
+
+[[ -f "${ZSH_PLUGIN_DIR}/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] && \
+    source "${ZSH_PLUGIN_DIR}/zsh-autosuggestions/zsh-autosuggestions.zsh"
+
+
+[[ -f "${ZSH_PLUGIN_DIR}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]] && \
+    source "${ZSH_PLUGIN_DIR}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 

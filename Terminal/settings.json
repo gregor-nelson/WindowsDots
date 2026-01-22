@@ -30,11 +30,13 @@
     {
         "defaults": 
         {
+            "bellStyle": "none",
             "colorScheme": "CustomTheme"
         },
         "list": 
         [
             {
+                "bellStyle": "none",
                 "colorScheme": "CustomTheme",
                 "font": 
                 {
@@ -45,6 +47,48 @@
                 "hidden": false,
                 "name": "PowerShell",
                 "source": "Windows.Terminal.PowershellCore"
+            },
+            {
+                "font": 
+                {
+                    "face": "JetBrainsMono Nerd Font"
+                },
+                "guid": "{39c6ff43-ef2e-5f98-a973-d7443d41a3be}",
+                "hidden": false,
+                "name": "Kali",
+                "source": "Microsoft.WSL"
+            },
+            {
+                "font": 
+                {
+                    "face": "JetBrainsMono Nerd Font"
+                },
+                "guid": "{db7bd8bf-8e49-51c3-a0b8-c5e51c8fd72e}",
+                "hidden": false,
+                "name": "Arch",
+                "source": "Microsoft.WSL"
+            },
+            {
+                "colorScheme": "CustomTheme",
+                "font": 
+                {
+                    "face": "JetBrainsMono Nerd Font"
+                },
+                "guid": "{2e7b0bac-052a-5a34-8156-d9161318acbd}",
+                "hidden": false,
+                "name": "Fedora",
+                "source": "Microsoft.WSL"
+            },
+            {
+                "font": 
+                {
+                    "face": "JetBrainsMono Nerd Font"
+                },
+                "guid": "{d755a1c6-3d17-54b3-b2c9-5bd1a4cee309}",
+                "hidden": false,
+                "icon": "C:\\Users\\gregor\\AppData\\Local\\wsl\\{6c44ae28-8e4e-4586-b631-7c01a3e1c516}\\debian_logo_icon_169285.ico",
+                "name": "Debian",
+                "source": "Microsoft.WSL"
             }
         ]
     },
@@ -74,5 +118,6 @@
             "yellow": "#EBCB8B"
         }
     ],
-    "themes": []
-} 
+    "themes": [],
+    "warning.largePaste": false
+}

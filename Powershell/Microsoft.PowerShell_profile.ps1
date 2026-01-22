@@ -1,4 +1,3 @@
-
 $env:Path = "C:\Users\gregor\AppData\Roaming\npm;" + $env:Path
 
 function prompt {
@@ -455,12 +454,23 @@ function Touch-File {
 
 Set-Alias -Name touch -Value Touch-File
 
+function VPS2 { ssh -C debian@51.178.139.7}
+Set-Alias -Name debian_server -Value VPS2
 
-function Connect-Watch { ssh -C debian@51.79.254.133 }
-Set-Alias -Name sshwatch -Value Connect-Watch
+function VPS { ssh -C debian@57.128.170.234 }
+Set-Alias -Name mot_server -Value VPS
 
-function Connect-Pdf { ssh -C debian@51.178.139.7 }
-Set-Alias -Name server -Value Connect-Pdf
+function Dev-Start {python.exe C:\Users\gregor\Downloads\Dev\motorwise.io\configs\scripts\dev_start.py}
+Set-Alias -Name dev_server -Value Dev-Start
 
-function Dev-Start {python.exe C:\Users\gregor\Downloads\Dev\MotCheck-UK\configs\dev_start.py}
-Set-Alias -Name mot_server -Value Dev-Start
+function Claude-Unsafe {
+    $claudePath = "C:\Users\gregor\.local\bin\claude"
+    & $claudePath --dangerously-skip-permissions @args
+}
+Set-Alias -Name claude -Value Claude-Unsafe -Option AllScope -Force
+
+function gs { git status }
+function gc { param([string]$m) git commit -m $m }
+function gp { git push origin main }
+function ga { git add . }
+

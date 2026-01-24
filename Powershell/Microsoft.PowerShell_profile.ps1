@@ -463,11 +463,15 @@ Set-Alias -Name mot_server -Value VPS
 function Dev-Start {python.exe C:\Users\gregor\Downloads\Dev\motorwise.io\configs\scripts\dev_start.py}
 Set-Alias -Name dev_server -Value Dev-Start
 
-function Claude-Unsafe {
-    $claudePath = "C:\Users\gregor\.local\bin\claude"
-    & $claudePath --dangerously-skip-permissions @args
+function Claude-WSL {
+    wsl ~/.local/bin/claude $args
 }
-Set-Alias -Name claude -Value Claude-Unsafe -Option AllScope -Force
+Set-Alias -Name claude -Value Claude-WSL -Option AllScope -Force
+
+function Claude-Windows {
+    & "C:\Users\gregor\.local\bin\claude" @args
+}
+Set-Alias -Name winclaude -Value Claude-Windows -Option AllScope -Force
 
 function gs { git status }
 function gc { param([string]$m) git commit -m $m }

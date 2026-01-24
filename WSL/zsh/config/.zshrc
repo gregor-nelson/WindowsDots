@@ -205,3 +205,19 @@ ZSH_PLUGIN_DIR="${HOME}/.local/share/zsh/plugins"
 [[ -f "${ZSH_PLUGIN_DIR}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]] && \
     source "${ZSH_PLUGIN_DIR}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
+# Autostart tmux
+if command -v tmux &>/dev/null \
+    && [ -z "$TMUX" ] \
+    && [ -n "$PS1" ] \
+    && [[ ! "$TERM" =~ screen ]] \
+    && [[ ! "$TERM" =~ tmux ]] \
+    && [ -z "$INSIDE_EMACS" ] \
+    && [ -z "$EMACS" ] \
+    && [ -z "$VIM" ] \
+    && [ -z "$VSCODE_RESOLVING_ENVIRONMENT" ]; then
+  if tmux has-session -t main 2>/dev/null; then
+    tmux attach-session -t main
+  else
+    tmux new-session -s main \; split-window -h \; select-pane -t 0
+  fi
+fi

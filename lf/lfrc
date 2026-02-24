@@ -1,6 +1,6 @@
 # ══════════════════════════════════════════════════════════════════════════════
-# lf Configuration - OneDark Theme (Windows Native)
-# Aligned with tmux theme for visual consistency
+# lf Configuration - Minimal Theme (Windows Native)
+# Aligned with Neovim for visual consistency
 # ══════════════════════════════════════════════════════════════════════════════
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -26,126 +26,120 @@ set previewer "C:\\Users\\gregor\\AppData\\Local\\lf\\preview.bat"
 set preview
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Color Palette (OneDark - aligned with tmux)
+# Color Palette
 # ══════════════════════════════════════════════════════════════════════════════
-# black=#1e222a  (30;34;42)    grey=#282c34  (40;44;52)
-# white=#abb2bf  (171;178;191) green=#7EC7A2 (126;199;162)
-# blue=#61afef   (97;175;239)  darkblue=#668ee3 (102;142;227)
-# red=#e06c75    (224;108;117) yellow=#EBCB8B (235;203;139)
-# orange=#caaa6a (202;170;106) pink=#c678dd  (198;120;221)
-# cyan=#56b6c2   (86;182;194)  grey_dim=#545862 (84;88;98)
+# grey_ui=#767676 (118;118;118)  - primary UI text (matches nvim statusline)
+# green=#98c379   (152;195;121)  - single accent color (matches nvim normal mode)
+# grey_bg=#282c34 (40;44;52)     - subtle background (cursorline)
+# border=#262626  (256-color 235) - near-invisible borders (matches nvim separator)
+# red=#e06c75     (224;108;117)  - errors
+# yellow=#EBCB8B  (235;203;139)  - copy highlight
+# pink=#c678dd    (198;120;221)  - select/visual highlight
+# blue=#61afef    (97;175;239)   - tags
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Visual Layout (matching tmux theme)
+# Visual Layout (matched to Neovim - minimal, transparent)
 # ─────────────────────────────────────────────────────────────────────────────
 
-# Box drawing with themed green border (matching tmux active-pane)
 set nodrawbox
-set borderfmt "\033[38;2;126;199;162m"
+set borderfmt "\033[38;5;235m"
 
-# Layout ratios (1:2:3 gives more preview space for visual impact)
 set ratios 3:4:5
 set info size:time
 set dircounts
 set scrolloff 10
 
-# Cursor styles (green = active, like tmux pane-active-border)
-set cursoractivefmt "\033[7;38;2;126;199;162m"
-set cursorparentfmt "\033[2;38;2;171;178;191m"
+# Cursor: subtle grey background (like nvim cursorline)
+set cursoractivefmt "\033[48;2;40;44;52m"
+set cursorparentfmt "\033[2;38;2;118;118;118m"
 set cursorpreviewfmt ""
 
-# File operation highlights
+# File operation highlights (functional - keep colored)
 set copyfmt "\033[7;38;2;235;203;139m"
 set cutfmt "\033[7;38;2;224;108;117m"
 set selectfmt "\033[7;38;2;198;120;221m"
 set tagfmt "\033[38;2;97;175;239m"
-
-# Visual mode formatting (inverse pink)
 set visualfmt "\033[7;38;2;198;120;221m"
 
-# Menu styling (OneDark themed)
-set menufmt "\033[38;2;171;178;191m"
-set menuheaderfmt "\033[1;38;2;97;175;239m"
-set menuselectfmt "\033[7;38;2;126;199;162m"
+# Menus: muted grey with green accent for selection
+set menufmt "\033[38;2;118;118;118m"
+set menuheaderfmt "\033[1;38;2;152;195;121m"
+set menuselectfmt "\033[48;2;40;44;52m"
 
-# Error formatting (red)
+# Error/number formatting
 set errorfmt "\033[38;2;224;108;117m%s\033[0m"
-set numberfmt "\033[38;2;171;178;191m"
+set numberfmt "\033[38;2;118;118;118m"
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Status Bar Styling (matching tmux pill structure)
-# 
-# tmux pill pattern: #[fg=black,bg=color] LABEL #[fg=white,bg=grey] value
+# Status Bar Styling (matched to Neovim - grey base, single green accent)
 # ─────────────────────────────────────────────────────────────────────────────
 
-# Color variables for reference (inline RGB values required for Windows lf)
-# Use grey (40;44;52) for value backgrounds, black (30;34;42) for label text
+# Top prompt: grey path + green accent on current file (like nvim statusline)
+set promptfmt "\033[38;2;118;118;118m 󰉋 %w/\033[38;2;152;195;121m%f\033[0m"
 
-# Top prompt: clean pill-box design
-# Structure: green divider | blue dir pill | pink file pill
-set promptfmt "\033[38;2;126;199;162m━━ \033[0m\033[1;48;2;126;199;162m\033[38;2;30;34;42m 󰉋 \033[0m\033[48;2;40;44;52m\033[38;2;171;178;191m %w \033[0m \033[48;2;40;44;52m\033[38;2;198;120;221m 󰈤 \033[38;2;171;178;191m%f \033[0m"
+# Bottom left status: flat grey (matches nvim #767676 statusline info)
+set statfmt "\033[38;2;118;118;118m 󰌾 %p  󰋊 %s  󰔠 %t\033[0m"
 
-# Bottom left status: clean pills for permissions, size, time
-# %p=permissions, %s=size, %t=mod time
-set statfmt "\033[38;2;126;199;162m━━ \033[0m\033[1;48;2;126;199;162m\033[38;2;30;34;42m 󰌾 \033[0m\033[48;2;40;44;52m\033[38;2;171;178;191m %p \033[0m \033[48;2;40;44;52m\033[38;2;97;175;239m 󰋊 \033[38;2;171;178;191m%s \033[0m \033[48;2;40;44;52m\033[38;2;86;182;194m 󰔠 \033[38;2;171;178;191m%t \033[0m"
-
-# Bottom right ruler with spaced pills and clear visual hierarchy
-# %a=keys, %p=progress, %m=cut, %c=copy, %s=selected, %f=filter, %i=index, %t=total, %d=disk
-# Pipe | separates sections - empty sections are hidden
-# Background: \033[48;2;R;G;Bm  Foreground: \033[38;2;R;G;Bm
-set rulerfmt "\033[2;38;2;171;178;191m%a\033[0m|\033[38;2;97;175;239m%p\033[0m|\033[48;2;40;44;52m\033[38;2;224;108;117m ✂ \033[38;2;171;178;191m%m \033[0m|\033[48;2;40;44;52m\033[38;2;202;170;106m  \033[38;2;171;178;191m%c \033[0m|\033[48;2;40;44;52m\033[38;2;198;120;221m 󰒅 \033[38;2;171;178;191m%s \033[0m|\033[48;2;40;44;52m\033[38;2;97;175;239m  \033[38;2;171;178;191m%f \033[0m|\033[48;2;40;44;52m\033[38;2;126;199;162m  \033[38;2;171;178;191m%i/%t \033[0m|\033[1;48;2;97;175;239m\033[38;2;30;34;42m 󰋊 %d \033[0m"
+# Bottom right ruler: uniform grey, pipe-separated (empty sections auto-hidden)
+set rulerfmt "\033[2;38;2;118;118;118m%a\033[0m|\033[38;2;118;118;118m%p\033[0m|\033[38;2;118;118;118m ✂ %m \033[0m|\033[38;2;118;118;118m  %c \033[0m|\033[38;2;118;118;118m 󰒅 %s \033[0m|\033[38;2;118;118;118m  %f \033[0m|\033[38;2;118;118;118m  %i/%t \033[0m|\033[38;2;118;118;118m 󰋊 %d \033[0m"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Keybindings - Windows Explorer Style
 # ─────────────────────────────────────────────────────────────────────────────
+# Primary layer: Explorer muscle memory (Enter, Backspace, arrows, Ctrl+C/X/V)
+# Power-user layer: g-bookmarks, z-toggles, Y-clipboard, vim search (/ ? n N)
+#
+# Note: Ctrl+C/V/X may be intercepted by Windows Terminal. If so, set
+# "useCtrlCVAsClipboard": false or remap terminal copy/paste to Ctrl+Shift+C/V
+# in Windows Terminal settings.
 
-# Clear defaults
+# Clear defaults that conflict with Explorer bindings or bookmark prefixes
 map d
 map y
 map p
 map c
 map m
 
-# Navigation (Explorer-like)
+# ── Navigation (Explorer-standard) ──────────────────────────────────────────
 map <enter> open
 map <backspace> updir
 map <backspace2> updir
-map H updir
-map L open
-map J half-down
-map K half-up
+map <a-up> updir
+map <left> updir
+map <right> open
 map gg top
 map G bottom
 map <home> top
 map <end> bottom
+map <pgup> half-up
+map <pgdn> half-down
+map <a-left> jump-prev
+map <a-right> jump-next
 
-# Selection
+# ── Selection ───────────────────────────────────────────────────────────────
 map <space> :toggle; down
 map v invert
 map V invert-below
-map a glob-select *
-map A glob-unselect *
+map <c-a> glob-select *
+map <esc> :clear; unselect
+map u :clear; unselect
 
-# File Operations (Windows-style keys where possible)
-map y copy
-map x cut
-map p paste
+# ── File Operations (Explorer-standard) ─────────────────────────────────────
+map <c-c> copy
+map <c-x> cut
+map <c-v> paste
 map <delete> delete
-map <f2> rename
-map <f5> reload
-map <f7> push :mkdir<space>
+map <c-r> reload
+map <c-n> push :mkdir<space>
+map <a-n> push :touch<space>
 map r rename
 map R bulk-rename
 
-# Create new
-map n push :touch<space>
-map N push :mkdir<space>
-
-# Toggle hidden files
+# ── Toggle hidden files ─────────────────────────────────────────────────────
 map . set hidden!
 map <a-.> set hidden!
 
-# Search and filter
+# ── Search and filter ───────────────────────────────────────────────────────
 map / search
 map ? search-back
 map f find
@@ -154,7 +148,7 @@ map ; find-next
 map , find-prev
 map <c-f> :filter
 
-# Bookmarks
+# ── Bookmarks ───────────────────────────────────────────────────────────────
 map gh cd ~
 map gd cd ~/Downloads
 map gD cd ~/Documents
@@ -165,23 +159,20 @@ map gm cd ~/Music
 map gt cd ~/Desktop
 map g. cd "C:/Users/gregor/AppData/Roaming/lf"
 
-# Shell and editor
+# ── Shell and editor ────────────────────────────────────────────────────────
 map e $nvim "%f%"
 map E $nvim .
 map w $cmd /k cd /d "%d%"
 map W $pwsh -NoExit -Command "cd '%d%'"
 map S $cmd /k cd /d "%d%"
 
-# Open with specific app
+# ── Open with specific app ──────────────────────────────────────────────────
 map o &start "" "%f%"
 map O push :open-with<space>
 
-# Quick actions
+# ── Quick actions ───────────────────────────────────────────────────────────
 map i $more "%f%"
 map I $nvim -R "%f%"
-map <c-r> reload
-map <esc> :clear; unselect
-map u :clear; unselect
 map zh set hidden!
 map zr set reverse!
 map zn set info; set sortby natural
@@ -189,7 +180,7 @@ map zs set info size; set sortby size
 map zt set info time; set sortby time
 map za set info size:time
 
-# Copy path/name to clipboard
+# ── Copy path/name to clipboard ────────────────────────────────────────────
 map Yy $echo|set /p="%f%"|clip
 map Yd $echo|set /p="%d%"|clip
 map Yn $for %%I in ("%f%") do @echo|set /p="%%~nxI"|clip

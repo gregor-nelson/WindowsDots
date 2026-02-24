@@ -438,6 +438,17 @@ function Get-FileListingWithIcons {
 
 Set-Alias -Name ls -Value Get-FileListingWithIcons -Option AllScope -Force
 
+function time {
+    $sw = [System.Diagnostics.Stopwatch]::StartNew()
+    & @args
+    $sw.Stop()
+    Write-Host "`nElapsed: $($sw.Elapsed)" -ForegroundColor Cyan
+}
+
+function which ($command) {
+    (Get-Command $command -ErrorAction SilentlyContinue).Source
+}
+
 function Touch-File {
     param (
         [Parameter(Mandatory=$true)]
@@ -451,30 +462,36 @@ function Touch-File {
         }
     }
 }
-
 Set-Alias -Name touch -Value Touch-File
+
+function head { param([string]$Path, [int]$n=10) Get-Content $Path -First $n }
+
+function tail { param([string]$Path, [int]$n=10) Get-Content $Path -Last $n }
 
 function VPS2 { ssh -C debian@51.178.139.7}
 Set-Alias -Name debian_server -Value VPS2
-
 function VPS { ssh -C debian@57.128.170.234 }
 Set-Alias -Name mot_server -Value VPS
 
 function Dev-Start {python.exe C:\Users\gregor\Downloads\Dev\motorwise.io\configs\scripts\dev_start.py}
 Set-Alias -Name dev_server -Value Dev-Start
 
-function Claude-WSL {
-    wsl ~/.local/bin/claude $args
-}
-Set-Alias -Name claude -Value Claude-WSL -Option AllScope -Force
-
-function Claude-Windows {
-    & "C:\Users\gregor\.local\bin\claude" @args
-}
-Set-Alias -Name winclaude -Value Claude-Windows -Option AllScope -Force
+# function Claude-WSL {
+#     wsl -e /home/gregor/.local/bin/claude @args
+# }
+# Set-Alias -Name claude -Value Claude-WSL -Option AllScope -Force
+# function Claude-Windows {
+#     & "C:\Users\gregor\.local\bin\claude" @args
+# }
+# Set-Alias -Name winclaude -Value Claude-Windows -Option AllScope -Force
 
 function gs { git status }
 function gc { param([string]$m) git commit -m $m }
 function gp { git push origin main }
 function ga { git add . }
 
+Set-PSReadLineKeyHandler -Chord 'Alt+e' -ScriptBlock {
+    explorer .
+}
+
+function local { Set-Location $env:LOCALAPPDATA }

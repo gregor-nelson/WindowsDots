@@ -417,7 +417,6 @@ function Get-FileListingWithIcons {
                         "\.(js|ts|py|rb|java|c|cpp|go|rs)$" { "DarkYellow" }
                         default { if ($item.PSIsContainer) { "Cyan" } else { "White" } }
                     }
-                    
                     Write-Host ("{0,-$modeWidth} " -f $mode) -NoNewline -ForegroundColor DarkGray
                     Write-Host ("{0,-$dateWidth} " -f $lastWrite) -NoNewline -ForegroundColor DarkGray
                     Write-Host ("{0,$sizeWidth} " -f $size) -NoNewline -ForegroundColor DarkGray
@@ -430,7 +429,6 @@ function Get-FileListingWithIcons {
             }
         }
     }
-    
     end {
         $Host.UI.RawUI.ForegroundColor = $originalForeground
     }
@@ -473,9 +471,6 @@ Set-Alias -Name debian_server -Value VPS2
 function VPS { ssh -C debian@57.128.170.234 }
 Set-Alias -Name mot_server -Value VPS
 
-function Dev-Start {python.exe C:\Users\gregor\Downloads\Dev\motorwise.io\configs\scripts\dev_start.py}
-Set-Alias -Name dev_server -Value Dev-Start
-
 # function Claude-WSL {
 #     wsl -e /home/gregor/.local/bin/claude @args
 # }
@@ -494,4 +489,37 @@ Set-PSReadLineKeyHandler -Chord 'Alt+e' -ScriptBlock {
     explorer .
 }
 
+function Start-DefaultBrowser {
+    $progId = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice' -ErrorAction SilentlyContinue).ProgId
+    $cmd = if ($progId) { (Get-ItemProperty "Registry::HKEY_CLASSES_ROOT\$progId\shell\open\command" -ErrorAction SilentlyContinue).'(default)' }
+    if ($cmd -match '^"([^"]+)"' -or $cmd -match '^(\S+)') {
+        Start-Process -FilePath $matches[1]
+    } else {
+        Start-Process "https://www.google.com"
+    }
+}
+
+Set-PSReadLineKeyHandler -Chord 'Alt+w' -ScriptBlock {
+    Start-DefaultBrowser
+}
+
+Set-PSReadLineKeyHandler -Chord 'Alt+c' -ScriptBlock {
+    [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
+    [Microsoft.PowerShell.PSConsoleReadLine]::Insert('claude')
+    [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
+}
+
+Set-PSReadLineKeyHandler -Chord 'Alt+n' -ScriptBlock {
+    [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
+    [Microsoft.PowerShell.PSConsoleReadLine]::Insert('nvim')
+    [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
+}
+
 function local { Set-Location $env:LOCALAPPDATA }
+
+function dev { Set-Location -Path "$HOME\Downloads\Dev" }
+
+function nav { Set-Location -Path "$HOME\Downloads\Dev\NavView" }
+
+function book { Set-Location -Path "$HOME\Downloads\Dev\Android\lectera" }
+

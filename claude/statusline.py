@@ -31,8 +31,19 @@ folder = parts[-1] if parts else cwd
 cost = (d.get("cost") or {}).get("total_cost_usd") or 0
 
 # colors
-R, G, Y, DIM, B, RST = "\033[31m", "\033[32m", "\033[33m", "\033[2m", "\033[1m", "\033[0m"
-color = G if pct < 50 else Y if pct < 80 else R
+G, DIM, B, RST = "\033[32m", "\033[2m", "\033[1m", "\033[0m"
+ORANGE_LIGHT = "\033[38;5;214m"
+ORANGE_DEEP = "\033[38;5;208m"
+RED = "\033[38;5;196m"
+# tiered by absolute context tokens — switch sessions when red.
+if used >= 200_000:
+    color = RED
+elif used >= 150_000:
+    color = ORANGE_DEEP
+elif used >= 100_000:
+    color = ORANGE_LIGHT
+else:
+    color = G
 
 # visual bar: 15 segments, clamped
 filled = min(pct * 15 // 100, 15)

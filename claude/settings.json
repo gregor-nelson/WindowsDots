@@ -2,13 +2,7 @@
   "env": {
     "EDITOR": "nvim"
   },
-  "skipDangerousModePermissionPrompt": true,
-  "statusLine": {
-    "type": "command",
-    "command": "python3 ~/.claude/statusline.py 2>/dev/null || echo '? no data'"
-  },
   "permissions": {
-    "defaultMode": "bypassPermissions",
     "allow": [
       "Bash(set:*)",
       "Read(//c/Users/gregor/Downloads/Dev/motorwise.io/frontend/public/tools/components/**)",
@@ -17,6 +11,15 @@
       "Bash(head:*)",
       "Bash(cat:*)",
       "Bash(python3:*)"
-    ]
-  }
+    ],
+    "defaultMode": "auto"
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline-wrapper.sh"
+  },
+  "effortLevel": "xhigh",
+  "skipDangerousModePermissionPrompt": true,
+  "editorMode": "vim",
+  "skipAutoPermissionPrompt": true
 }

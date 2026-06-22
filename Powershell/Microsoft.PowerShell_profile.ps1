@@ -466,19 +466,9 @@ function head { param([string]$Path, [int]$n=10) Get-Content $Path -First $n }
 
 function tail { param([string]$Path, [int]$n=10) Get-Content $Path -Last $n }
 
-function VPS2 { ssh -C debian@51.178.139.7}
-Set-Alias -Name debian_server -Value VPS2
 function VPS { ssh -C debian@57.128.170.234 }
-Set-Alias -Name mot_server -Value VPS
+Set-Alias -Name server -Value VPS
 
-# function Claude-WSL {
-#     wsl -e /home/gregor/.local/bin/claude @args
-# }
-# Set-Alias -Name claude -Value Claude-WSL -Option AllScope -Force
-# function Claude-Windows {
-#     & "C:\Users\gregor\.local\bin\claude" @args
-# }
-# Set-Alias -Name winclaude -Value Claude-Windows -Option AllScope -Force
 
 function gs { git status }
 function gc { param([string]$m) git commit -m $m }
@@ -515,11 +505,89 @@ Set-PSReadLineKeyHandler -Chord 'Alt+n' -ScriptBlock {
     [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
 }
 
+function Serve {
+    [CmdletBinding()]
+    param(
+        [int]$Port = 9000,
+        [string]$Path = "."
+    )
+
+    $resolved = (Resolve-Path $Path).Path
+    $esc   = [char]27
+    $reset = "$esc[0m"
+
+    # Best-guess LAN address so you can open it from other devices
+    $lanIp = (Get-NetIPAddress -AddressFamily IPv4 -ErrorAction SilentlyContinue |
+        Where-Object { $_.IPAddress -notlike '127.*' -and $_.IPAddress -notlike '169.254.*' } |
+        Sort-Object InterfaceMetric | Select-Object -First 1).IPAddress
+    if (-not $lanIp) { $lanIp = 'localhost' }
+
+    # Restrained 256-colour palette
+    $label  = "$esc[38;5;245m"   # secondary text
+    $muted  = "$esc[38;5;240m"   # rules / timestamps
+    $accent = "$esc[38;5;110m"   # links
+    $head   = "$esc[38;5;252m"   # title
+
+    $rows = @(
+        @{ Label = 'Directory'; Value = $resolved;                 Link = $false }
+        @{ Label = 'Local';     Value = "http://localhost:$Port/"; Link = $true  }
+        @{ Label = 'Network';   Value = "http://${lanIp}:$Port/";  Link = $true  }
+    )
+    $labelW = 9
+    $width  = ($rows | ForEach-Object { ($_.Label.PadRight($labelW) + '  ' + $_.Value).Length } |
+        Measure-Object -Maximum).Maximum
+
+    Write-Host ""
+    Write-Host "  $head`Python HTTP Server$reset"
+    Write-Host "  $muted$('─' * $width)$reset"
+    foreach ($r in $rows) {
+        $value = if ($r.Link) { "$accent$($r.Value)$reset" } else { $r.Value }
+        Write-Host "  $label$($r.Label.PadRight($labelW))$reset $value"
+    }
+    Write-Host ""
+    Write-Host "  ${label}Ctrl+C to stop$reset"
+    Write-Host ""
+
+    # -u keeps Python's output unbuffered so the log streams live
+    python -u -m http.server $Port 2>&1 | ForEach-Object {
+        $line = $_.ToString()
+        if ($line -match '^(?<ip>\S+) - - \[[^\]]+\] "(?<method>\S+) (?<path>\S+)[^"]*" (?<code>\d{3})') {
+            $code = [int]$matches['code']
+            $col  = if     ($code -ge 500) { "$esc[38;5;167m" }   # red
+                    elseif ($code -ge 400) { "$esc[38;5;179m" }   # amber
+                    elseif ($code -ge 300) { "$esc[38;5;110m" }   # blue
+                    else                   { "$esc[38;5;108m" }   # green
+            $time = (Get-Date).ToString('HH:mm:ss')
+            Write-Host ("  $muted{0}$reset  " -f $time)                       -NoNewline
+            Write-Host ("{0}{1}$reset  " -f $col, $matches['code'])           -NoNewline
+            Write-Host ("$label{0,-4}$reset  " -f $matches['method'])         -NoNewline
+            Write-Host  $matches['path']
+        }
+        elseif ($line -match '^Serving HTTP on' -or $line -match '\] code \d{3}, message') {
+            # banner duplicate / redundant error detail already shown in the request line
+        }
+        else {
+            Write-Host "  $muted$line$reset"
+        }
+    }
+}
+
+Set-PSReadLineKeyHandler -Chord 'Alt+m' -ScriptBlock {
+    [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
+    [Microsoft.PowerShell.PSConsoleReadLine]::Insert('Serve')
+    [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
+}
+
+# Alt+P: insert a canned phrase at the current cursor position (does not run)
+Set-PSReadLineKeyHandler -Chord 'Alt+p' -ScriptBlock {
+    [Microsoft.PowerShell.PSConsoleReadLine]::Insert('Please read the following and pick this up')
+}
+
 function local { Set-Location $env:LOCALAPPDATA }
 
 function dev { Set-Location -Path "$HOME\Downloads\Dev" }
 
 function nav { Set-Location -Path "$HOME\Downloads\Dev\NavView" }
 
-function book { Set-Location -Path "$HOME\Downloads\Dev\Android\lectera" }
+function navsrc { Set-Location -Path "C:\Users\gregor\Documents\NavView\NavView_Source" }
 
